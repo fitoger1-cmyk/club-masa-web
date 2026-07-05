@@ -34,5 +34,30 @@ function changeQty(key,d){const item=cart.find(i=>i.key===key); if(!item)return;
 function updateCart(){const el=document.getElementById('cartItems'); el.innerHTML=''; let total=0,count=0; cart.forEach(i=>{total+=i.price*i.qty; count+=i.qty; el.innerHTML+=`<div class="cart-item"><div><b>${i.qty}x ${i.name}</b><br><small>${i.size} · ${money(i.price)}</small></div><div class="cart-controls"><button onclick="changeQty('${i.key}',-1)">-</button><button onclick="changeQty('${i.key}',1)">+</button></div></div>`}); document.getElementById('total').textContent=money(total); document.getElementById('cartCount').textContent=count;}
 function toggleCart(){document.getElementById('cart').classList.toggle('open')}
 function sendWhatsApp(){if(cart.length===0){alert('Agregá productos al carrito.');return} const name=document.getElementById('customerName').value; const phone=document.getElementById('customerPhone').value; const addr=document.getElementById('customerAddress').value; const del=document.getElementById('deliveryType').value; const pay=document.getElementById('paymentMethod').value; const notes=document.getElementById('notes').value; const total=cart.reduce((s,i)=>s+i.price*i.qty,0); let msg='🍕 Nuevo pedido - El Club de la Masa G%0A%0A'; cart.forEach(i=>msg+=`${i.qty}x ${i.name} (${i.size}) - ${money(i.price*i.qty)}%0A`); msg+=`%0ATotal: ${money(total)}%0A%0ACliente: ${name}%0ATeléfono: ${phone}%0ADirección: ${addr}%0AModalidad: ${del}%0APago: ${pay}%0AObservaciones: ${notes||'-'}`; window.open(`https://wa.me/${WHATSAPP}?text=${msg}`,'_blank');}
-function mercadoPagoInfo(){alert('Para activar Mercado Pago automático necesitamos tus credenciales: Access Token y Public Key. Mientras tanto el pedido puede enviarse por WhatsApp marcando pago Mercado Pago.');}
+async function mercadoPagoInfo() {
+  if (cart.length === 0) {
+    alert("Agregá productos al carrito.");
+    return;
+  }
+
+  const response = await fetch("/api/create-preference", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      items: cart.map(i => ({
+        title: i.name + " " + i.size,
+        quantity: i.qty,
+        unit_price: i.price
+      }))
+    })
+  });
+
+  const data = await response.json();
+
+  if (data.init_point) {
+    window.location.href = data.init_point;
+  } else {
+    alert("No se pudo iniciar el pago.");
+  }
+}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); render(b.dataset.filter)}); render();

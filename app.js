@@ -1,5 +1,5 @@
 const WHATSAPP = '541140480762';
-const money = n => '$' + n.toLocaleString('es-AR');
+const money = n => '$' + n.toLocaleString('es-AR'); 
 const products = [
  {cat:'pizzas',name:'Muzzarella',desc:'Salsa de tomate artesanal, muzzarella premium, aceitunas verdes y orégano.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4304.jpg',prices:{Chica:7000,Grande:12500}},
  {cat:'pizzas',name:'Napolitana',desc:'Muzzarella, tomate fresco, ajo, albahaca y oliva.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4291.jpg',prices:{Chica:9000,Grande:17500}},

@@ -1,63 +1,430 @@
-const WHATSAPP = '541140480762';
-const money = n => '$' + n.toLocaleString('es-AR'); 
-const products = [
- {cat:'pizzas',name:'Muzzarella',desc:'Salsa de tomate artesanal, muzzarella premium, aceitunas verdes y orégano.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4304.jpg',prices:{Chica:7000,Grande:12500}},
- {cat:'pizzas',name:'Napolitana',desc:'Muzzarella, tomate fresco, ajo, albahaca y oliva.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4291.jpg',prices:{Chica:9000,Grande:17500}},
- {cat:'pizzas',name:'Especial con Jamón',desc:'Salsa de tomate, muzzarella, jamón cocido y morrones asados.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4303.jpg',prices:{Chica:10000,Grande:18000}},
- {cat:'pizzas',name:'Fugazzeta',desc:'Abundante cebolla, muzzarella cremosa, oliva y pimienta.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4294.jpg',prices:{Chica:8000,Grande:15000}},
- {cat:'pizzas',name:'Muzzarella y Huevo',desc:'Salsa artesanal, muzzarella premium, huevo rallado y aceitunas.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4293.jpg',prices:{Chica:9000,Grande:16000}},
- {cat:'pizzas',name:'Calabresa',desc:'Muzzarella y longaniza calabresa premium con toque de ají.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4311.jpg',prices:{Chica:9000,Grande:16000}},
- {cat:'pizzas',name:'Rúcula y Jamón Crudo',desc:'Muzzarella, jamón crudo, rúcula y parmesano.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4288.jpg',prices:{Chica:11500,Grande:20500}},
- {cat:'pizzas',name:'Cuatro Quesos',desc:'Muzzarella, provolone, fontina y queso azul.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4300.jpg',prices:{Chica:10500,Grande:18500}},
- {cat:'pizzas',name:'Barbacoa Chicken',desc:'Muzzarella, pollo, cebolla morada y salsa barbacoa.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4315.jpg',prices:{Chica:14000,Grande:22000}},
- {cat:'pizzas',name:'Fungi & Trufa',desc:'Muzzarella, mix de hongos y aceite de trufa.',img:'33781.png',prices:{Chica:11000,Grande:20000}},
- {cat:'pizzas',name:'Bacon',desc:'Muzzarella, panceta ahumada, cheddar y verdeo.',img:'33781.png',prices:{Chica:11000,Grande:20000}},
- {cat:'focaccias',name:'Milano Braseado',desc:'Roast beef braseado, provolone gratinado, morrones, tomate y alioli.',img:'33525.jpg',prices:{Unidad:10000}},
- {cat:'focaccias',name:'Mortadela Premium',desc:'Mortadela con pistacho, queso dambo, rúcula y oliva.',img:'33533.jpg',prices:{Unidad:8000}},
- {cat:'focaccias',name:'Crudo & Rúcula',desc:'Jamón crudo, parmesano, tomates secos, rúcula y oliva.',img:'33527.jpg',prices:{Unidad:9000}},
- {cat:'focaccias',name:'Milano Salame',desc:'Salame tipo Milán, queso dambo, tomate y lechuga morada.',img:'33537.jpg',prices:{Unidad:8000}},
- {cat:'focaccias',name:'Vegetariano',desc:'Berenjena, zucchini, morrón, muzzarella y pesto.',img:'33529.jpg',prices:{Unidad:8000}},
- {cat:'postres',name:'Brownie con nueces',desc:'Chocolate intenso y nueces crocantes.',img:'29854.jpg',prices:{Unidad:7500}},
- {cat:'postres',name:'Apple Crumble',desc:'Manzana con canela y crumble irresistible.',img:'29853.jpg',prices:{Unidad:7500}},
- {cat:'postres',name:'Pasta Frola',desc:'Clásica y casera, como la de siempre.',img:'8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4425.jpg',prices:{Unidad:7500}},
-];
+const WHATSAPP = "541140480762";
+
+// Mientras trabajamos localmente usa localhost.
+// Cuando publiquemos el backend, reemplazaremos la segunda dirección.
+const ES_LOCAL =
+  window.location.protocol === "file:" ||
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1";
+
+const API_URL = ES_LOCAL
+  ? "http://localhost:3000"
+  : "https://masaos-api.onrender.com";
+
+const money = (valor) =>
+  "$" + Number(valor || 0).toLocaleString("es-AR");
+
+let products = [];
 let cart = [];
-function render(filter='todos'){
- const el=document.getElementById('products'); el.innerHTML='';
- products.filter(p=>filter==='todos'||p.cat===filter).forEach(p=>{
-  const prices=Object.entries(p.prices).map(([s,pr])=>`<button class="btn primary" onclick="addItem('${p.name}','${s}',${pr})">${s} ${money(pr)}</button>`).join('');
-  el.innerHTML+=`<article class="card"><img src="assets/${p.img}" alt="${p.name}"><div class="card-body"><h3>${p.name}</h3><p class="desc">${p.desc}</p><div class="add-row">${prices}</div></div></article>`;
- });
+
+function normalizarCategoria(categoria) {
+  const valor = String(categoria || "").trim().toLowerCase();
+
+  if (valor === "pizza" || valor === "pizzas") {
+    return "pizzas";
+  }
+
+  if (valor === "focaccia" || valor === "focaccias") {
+    return "focaccias";
+  }
+
+  if (
+    valor === "postre" ||
+    valor === "postres" ||
+    valor === "pastelería" ||
+    valor === "pasteleria"
+  ) {
+    return "postres";
+  }
+
+  return valor || "otros";
 }
-function addItem(name,size,price){const key=name+' '+size;const item=cart.find(i=>i.key===key); if(item)item.qty++; else cart.push({key,name,size,price,qty:1}); updateCart(); document.getElementById('cart').classList.add('open');}
-function changeQty(key,d){const item=cart.find(i=>i.key===key); if(!item)return; item.qty+=d; if(item.qty<=0)cart=cart.filter(i=>i.key!==key); updateCart();}
-function updateCart(){const el=document.getElementById('cartItems'); el.innerHTML=''; let total=0,count=0; cart.forEach(i=>{total+=i.price*i.qty; count+=i.qty; el.innerHTML+=`<div class="cart-item"><div><b>${i.qty}x ${i.name}</b><br><small>${i.size} · ${money(i.price)}</small></div><div class="cart-controls"><button onclick="changeQty('${i.key}',-1)">-</button><button onclick="changeQty('${i.key}',1)">+</button></div></div>`}); document.getElementById('total').textContent=money(total); document.getElementById('cartCount').textContent=count;}
-function toggleCart(){document.getElementById('cart').classList.toggle('open')}
-function sendWhatsApp(){if(cart.length===0){alert('Agregá productos al carrito.');return} const name=document.getElementById('customerName').value; const phone=document.getElementById('customerPhone').value; const addr=document.getElementById('customerAddress').value; const del=document.getElementById('deliveryType').value; const pay=document.getElementById('paymentMethod').value; const notes=document.getElementById('notes').value; const total=cart.reduce((s,i)=>s+i.price*i.qty,0); let msg='🍕 Nuevo pedido - El Club de la Masa G%0A%0A'; cart.forEach(i=>msg+=`${i.qty}x ${i.name} (${i.size}) - ${money(i.price*i.qty)}%0A`); msg+=`%0ATotal: ${money(total)}%0A%0ACliente: ${name}%0ATeléfono: ${phone}%0ADirección: ${addr}%0AModalidad: ${del}%0APago: ${pay}%0AObservaciones: ${notes||'-'}`; window.open(`https://wa.me/${WHATSAPP}?text=${msg}`,'_blank');}
-async function mercadoPagoInfo() {
-  if (cart.length === 0) {
-    alert("Agregá productos al carrito.");
+
+async function cargarProductos() {
+  const contenedor = document.getElementById("products");
+
+  contenedor.innerHTML = `
+    <p class="estado-productos">Cargando productos...</p>
+  `;
+
+  try {
+    const respuesta = await fetch(`${API_URL}/api/productos`);
+
+    if (!respuesta.ok) {
+      throw new Error(`Error ${respuesta.status} al cargar productos`);
+    }
+
+    const datos = await respuesta.json();
+
+    if (!Array.isArray(datos)) {
+      throw new Error("La respuesta de productos no es válida");
+    }
+
+    products = datos
+      .filter((producto) => producto.activo !== false)
+      .map((producto) => ({
+        id: producto.id,
+        cat: normalizarCategoria(producto.categoria),
+        name: producto.nombre || "Producto",
+        desc: producto.descripcion || "",
+        img: producto.imagen || "",
+        prices: {
+          Unidad: Number(producto.precio || 0),
+        },
+      }));
+
+    render();
+  } catch (error) {
+    console.error("Error cargando productos:", error);
+
+    contenedor.innerHTML = `
+      <div class="error-productos">
+        <h3>No pudimos cargar el menú</h3>
+        <p>Verificá que MasaOS esté encendido e intentá nuevamente.</p>
+        <button class="btn primary" onclick="cargarProductos()">
+          Reintentar
+        </button>
+      </div>
+    `;
+  }
+}
+
+function crearImagenProducto(producto) {
+  if (!producto.img) {
+    return `
+      <div class="sin-imagen">
+        <span>🍕</span>
+      </div>
+    `;
+  }
+
+  return `
+    <img
+      src="assets/${producto.img}"
+      alt="${producto.name}"
+      loading="lazy"
+      onerror="
+        this.style.display='none';
+        this.nextElementSibling.style.display='flex';
+      "
+    >
+    <div class="sin-imagen" style="display:none">
+      <span>🍕</span>
+    </div>
+  `;
+}
+
+function render(filter = "todos") {
+  const contenedor = document.getElementById("products");
+  contenedor.innerHTML = "";
+
+  const productosFiltrados = products.filter(
+    (producto) => filter === "todos" || producto.cat === filter
+  );
+
+  if (productosFiltrados.length === 0) {
+    contenedor.innerHTML = `
+      <p class="estado-productos">
+        No hay productos disponibles en esta categoría.
+      </p>
+    `;
     return;
   }
 
-  const response = await fetch("/api/create-preference", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      items: cart.map(i => ({
-        title: i.name + " " + i.size,
-        quantity: i.qty,
-        unit_price: i.price
-      }))
-    })
+  productosFiltrados.forEach((producto) => {
+    const botonesPrecios = Object.entries(producto.prices)
+      .map(
+        ([tamaño, precio]) => `
+          <button
+            type="button"
+            class="btn primary"
+            onclick='addItem(
+              ${JSON.stringify(producto.name)},
+              ${JSON.stringify(tamaño)},
+              ${Number(precio)}
+            )'
+          >
+            ${tamaño} ${money(precio)}
+          </button>
+        `
+      )
+      .join("");
+
+    contenedor.innerHTML += `
+      <article class="card">
+        <div class="card-image">
+          ${crearImagenProducto(producto)}
+        </div>
+
+        <div class="card-body">
+          <h3>${producto.name}</h3>
+          <p class="desc">${producto.desc}</p>
+
+          <div class="add-row">
+            ${botonesPrecios}
+          </div>
+        </div>
+      </article>
+    `;
+  });
+}
+
+function addItem(name, size, price) {
+  const key = `${name} ${size}`;
+  const item = cart.find((producto) => producto.key === key);
+
+  if (item) {
+    item.qty += 1;
+  } else {
+    cart.push({
+      key,
+      name,
+      size,
+      price: Number(price),
+      qty: 1,
+    });
+  }
+
+  updateCart();
+  document.getElementById("cart").classList.add("open");
+}
+
+function changeQty(key, cantidad) {
+  const item = cart.find((producto) => producto.key === key);
+
+  if (!item) {
+    return;
+  }
+
+  item.qty += cantidad;
+
+  if (item.qty <= 0) {
+    cart = cart.filter((producto) => producto.key !== key);
+  }
+
+  updateCart();
+}
+
+function updateCart() {
+  const contenedor = document.getElementById("cartItems");
+  contenedor.innerHTML = "";
+
+  let total = 0;
+  let cantidadTotal = 0;
+
+  cart.forEach((item) => {
+    total += item.price * item.qty;
+    cantidadTotal += item.qty;
+
+    contenedor.innerHTML += `
+      <div class="cart-item">
+        <div>
+          <b>${item.qty}x ${item.name}</b>
+          <br>
+          <small>
+            ${item.size} · ${money(item.price)}
+          </small>
+        </div>
+
+        <div class="cart-controls">
+          <button
+            type="button"
+            onclick='changeQty(${JSON.stringify(item.key)}, -1)'
+          >
+            −
+          </button>
+
+          <button
+            type="button"
+            onclick='changeQty(${JSON.stringify(item.key)}, 1)'
+          >
+            +
+          </button>
+        </div>
+      </div>
+    `;
   });
 
-  const data = await response.json();
+  if (cart.length === 0) {
+    contenedor.innerHTML = "<p>Tu carrito está vacío.</p>";
+  }
 
-  if (data.init_point) {
-    window.location.href = data.init_point;
-  } else {
-    alert("No se pudo iniciar el pago.");
+  document.getElementById("total").textContent = money(total);
+  document.getElementById("cartCount").textContent = cantidadTotal;
+}
+
+function toggleCart() {
+  document.getElementById("cart").classList.toggle("open");
+}
+
+function obtenerDatosCliente() {
+  return {
+    nombre: document.getElementById("customerName").value.trim(),
+    telefono: document.getElementById("customerPhone").value.trim(),
+    direccion: document.getElementById("customerAddress").value.trim(),
+    modalidad: document.getElementById("deliveryType").value,
+    pago: document.getElementById("paymentMethod").value,
+    observaciones: document.getElementById("notes").value.trim(),
+  };
+}
+
+function validarPedido() {
+  if (cart.length === 0) {
+    alert("Agregá productos al carrito.");
+    return false;
+  }
+
+  const cliente = obtenerDatosCliente();
+
+  if (!cliente.nombre) {
+    alert("Ingresá tu nombre.");
+    document.getElementById("customerName").focus();
+    return false;
+  }
+
+  if (!cliente.telefono) {
+    alert("Ingresá tu teléfono.");
+    document.getElementById("customerPhone").focus();
+    return false;
+  }
+
+  if (cliente.modalidad === "Delivery" && !cliente.direccion) {
+    alert("Ingresá la dirección para el delivery.");
+    document.getElementById("customerAddress").focus();
+    return false;
+  }
+
+  return true;
+}
+
+function sendWhatsApp() {
+  if (!validarPedido()) {
+    return;
+  }
+
+  const cliente = obtenerDatosCliente();
+
+  const total = cart.reduce(
+    (acumulado, item) => acumulado + item.price * item.qty,
+    0
+  );
+
+  const lineasProductos = cart
+    .map(
+      (item) =>
+        `${item.qty}x ${item.name} (${item.size}) - ${money(
+          item.price * item.qty
+        )}`
+    )
+    .join("\n");
+
+  const mensaje = [
+    "🍕 NUEVO PEDIDO - EL CLUB DE LA MASA G",
+    "",
+    lineasProductos,
+    "",
+    `TOTAL: ${money(total)}`,
+    "",
+    `Cliente: ${cliente.nombre}`,
+    `Teléfono: ${cliente.telefono}`,
+    `Modalidad: ${cliente.modalidad}`,
+    `Dirección: ${cliente.direccion || "-"}`,
+    `Forma de pago: ${cliente.pago}`,
+    `Observaciones: ${cliente.observaciones || "-"}`,
+  ].join("\n");
+
+  const enlace = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
+    mensaje
+  )}`;
+
+  window.open(enlace, "_blank");
+}
+
+async function mercadoPagoInfo() {
+  if (!validarPedido()) {
+    return;
+  }
+
+  const boton = document.querySelector(".btn.mp");
+  const textoOriginal = boton.textContent;
+
+  boton.disabled = true;
+  boton.textContent = "Iniciando pago...";
+
+  try {
+    const respuesta = await fetch("/api/create-preference", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        items: cart.map((item) => ({
+          title: `${item.name} ${item.size}`,
+          quantity: Number(item.qty),
+          unit_price: Number(item.price),
+          currency_id: "ARS",
+        })),
+      }),
+    });
+
+    const textoRespuesta = await respuesta.text();
+
+let datos;
+
+try {
+  datos = JSON.parse(textoRespuesta);
+} catch {
+  throw new Error(
+    "Mercado Pago no está disponible desde Live Server. Probalo desde la web publicada en Vercel."
+  );
+}
+
+    if (!respuesta.ok) {
+      throw new Error(
+        datos.error || datos.message || "No se pudo iniciar el pago"
+      );
+    }
+
+    if (!datos.init_point) {
+      throw new Error("Mercado Pago no devolvió el enlace de pago");
+    }
+
+    window.location.href = datos.init_point;
+  } catch (error) {
+    console.error("Error Mercado Pago:", error);
+    alert(error.message);
+  } finally {
+    boton.disabled = false;
+    boton.textContent = textoOriginal;
   }
 }
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); b.classList.add('active'); render(b.dataset.filter)}); render();
+
+document.querySelectorAll(".tab").forEach((boton) => {
+  boton.addEventListener("click", () => {
+    document
+      .querySelectorAll(".tab")
+      .forEach((item) => item.classList.remove("active"));
+
+    boton.classList.add("active");
+    render(boton.dataset.filter);
+  });
+});
+
+document
+  .getElementById("deliveryType")
+  .addEventListener("change", (evento) => {
+    const direccion = document.getElementById("customerAddress");
+    const esDelivery = evento.target.value === "Delivery";
+
+    direccion.disabled = !esDelivery;
+    direccion.placeholder = esDelivery
+      ? "Dirección"
+      : "No es necesaria para retiro";
+
+    if (!esDelivery) {
+      direccion.value = "";
+    }
+  });
+
+updateCart();
+cargarProductos();

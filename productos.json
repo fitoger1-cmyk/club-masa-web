@@ -1,0 +1,10 @@
+[
+  {
+    "cat": "pizzas",
+    "name": "Muzzarella",
+    "desc": "Salsa de tomate artesanal, muzzarella premium, aceitunas verdes y orégano.",
+    "img": "8d40b7c3-123d-4cd4-bc4d-da60d1af4164-1_all_4304.jpg",
+    "prices": { "Chica": 7000, "Grande": 12500 },
+    "activo": true
+  }
+]

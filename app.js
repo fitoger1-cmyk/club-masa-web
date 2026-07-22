@@ -186,7 +186,9 @@ function addItem(name, size, price) {
   }
 
   updateCart();
-  document.getElementById("cart").classList.add("open");
+
+  // Ya no abre el carrito automáticamente.
+  // El cliente puede seguir agregando productos.
 }
 
 function changeQty(key, cantidad) {
@@ -254,7 +256,18 @@ function updateCart() {
 }
 
 function toggleCart() {
-  document.getElementById("cart").classList.toggle("open");
+  const carrito = document.getElementById("cart");
+
+  const fondo =
+    document.getElementById("cartBackdrop");
+
+  const abrir = !carrito.classList.contains("open");
+
+  carrito.classList.toggle("open", abrir);
+  fondo.classList.toggle("open", abrir);
+
+  document.body.style.overflow =
+    abrir ? "hidden" : "";
 }
 
 function obtenerDatosCliente() {

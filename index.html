@@ -2,70 +2,251 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+
+  <meta
+    name="theme-color"
+    content="#12100d"
+  />
+
   <title>El Club de la Masa G | Menú Online</title>
+
   <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
   <header class="hero">
     <div class="overlay"></div>
-    <nav>
-      <img src="assets/29291.jpg" alt="El Club de la Masa G" class="logo" />
-      <a class="nav-whatsapp" href="https://wa.me/541140480762" target="_blank">WhatsApp</a>
+
+    <nav class="main-nav">
+      <a href="#" class="brand-link" aria-label="Ir al inicio">
+        <img
+          src="assets/29291.jpg"
+          alt="Logo de El Club de la Masa G"
+          class="logo"
+        />
+      </a>
+
+      <a
+        class="nav-whatsapp"
+        href="https://wa.me/541140480762"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        WhatsApp
+      </a>
     </nav>
+
     <div class="hero-content">
-      <p class="tag">Pizzas artesanales · Focaccias · Pastelería</p>
+      <p class="tag">
+        Pizzas artesanales · Focaccias · Pastelería
+      </p>
+
       <h1>El Club de la Masa G</h1>
-      <p>Dr. Ricardo Levene 1226 · Retiro y delivery · 11 a 16 / 19 a 23</p>
-      <a href="#menu" class="btn primary">Pedir ahora</a>
+
+      <p class="hero-description">
+        Dr. Ricardo Levene 1226
+        <span>·</span>
+        Retiro y delivery
+        <span>·</span>
+        11 a 16 / 19 a 23
+      </p>
+
+      <a href="#menu" class="btn primary hero-button">
+        Ver menú
+      </a>
     </div>
   </header>
 
   <main>
-    <section class="info-bar">
-      <div>🚚 Delivery y retiro</div>
-      <div>💳 Mercado Pago, tarjetas, efectivo y transferencia</div>
-      <div>📲 11 4048-0762</div>
+    <section class="info-bar" aria-label="Información del negocio">
+      <div>
+        <span class="info-icon">🚚</span>
+        <span>Delivery y retiro</span>
+      </div>
+
+      <div>
+        <span class="info-icon">💳</span>
+        <span>Mercado Pago, tarjetas, efectivo y transferencia</span>
+      </div>
+
+      <div>
+        <span class="info-icon">📲</span>
+        <span>11 4048-0762</span>
+      </div>
     </section>
 
     <section id="menu" class="menu-section">
-      <h2>Menú online</h2>
-      <div class="tabs">
-        <button class="tab active" data-filter="todos">Todo</button>
-        <button class="tab" data-filter="pizzas">Pizzas</button>
-        <button class="tab" data-filter="focaccias">Focaccias</button>
-        <button class="tab" data-filter="postres">Postres</button>
+      <div class="menu-heading">
+        <div>
+          <p class="section-eyebrow">Elegí tus favoritos</p>
+          <h2>Menú online</h2>
+        </div>
+
+        <p class="menu-intro">
+          Agregá todos los productos que quieras y abrí el carrito cuando
+          estés listo para finalizar el pedido.
+        </p>
       </div>
+
+      <div class="tabs" aria-label="Categorías del menú">
+        <button
+          type="button"
+          class="tab active"
+          data-filter="todos"
+        >
+          Todo
+        </button>
+
+        <button
+          type="button"
+          class="tab"
+          data-filter="pizzas"
+        >
+          Pizzas
+        </button>
+
+        <button
+          type="button"
+          class="tab"
+          data-filter="focaccias"
+        >
+          Focaccias
+        </button>
+
+        <button
+          type="button"
+          class="tab"
+          data-filter="postres"
+        >
+          Postres
+        </button>
+      </div>
+
       <div id="products" class="grid"></div>
     </section>
   </main>
 
-  <aside class="cart" id="cart">
-    <h3>🛒 Mi pedido</h3>
+  <div
+    class="cart-backdrop"
+    id="cartBackdrop"
+    onclick="toggleCart()"
+    aria-hidden="true"
+  ></div>
+
+  <aside
+    class="cart"
+    id="cart"
+    aria-label="Carrito de compras"
+  >
+    <div class="cart-header">
+      <div>
+        <span class="cart-eyebrow">Finalizá tu compra</span>
+        <h3>🛒 Mi pedido</h3>
+      </div>
+
+      <button
+        type="button"
+        class="cart-close"
+        onclick="toggleCart()"
+        aria-label="Cerrar carrito"
+      >
+        ✕
+      </button>
+    </div>
+
     <div id="cartItems" class="cart-items"></div>
-    <div class="total">Total: <span id="total">$0</span></div>
 
-    <input id="customerName" placeholder="Nombre" />
-    <input id="customerPhone" placeholder="Teléfono" />
-    <input id="customerAddress" placeholder="Dirección" />
-    <select id="deliveryType">
-      <option value="Delivery">Delivery</option>
-      <option value="Retiro en local">Retiro en local</option>
-    </select>
-    <select id="paymentMethod">
-      <option value="Mercado Pago">Mercado Pago</option>
-      <option value="Transferencia">Transferencia</option>
-      <option value="Efectivo">Efectivo</option>
-      <option value="Tarjeta">Tarjeta</option>
-    </select>
-    <textarea id="notes" placeholder="Observaciones: sin aceitunas, sin cebolla, etc."></textarea>
+    <div class="total">
+      <span>Total</span>
+      <span id="total">$0</span>
+    </div>
 
-    <button class="btn primary full" onclick="sendWhatsApp()">Enviar pedido por WhatsApp</button>
-    <button class="btn mp full" onclick="mercadoPagoInfo()">Pagar con Mercado Pago</button>
-    <small>La integración automática de Mercado Pago se activa con tus credenciales de vendedor.</small>
+    <div class="customer-form">
+      <label for="customerName">Nombre</label>
+      <input
+        id="customerName"
+        type="text"
+        placeholder="Ingresá tu nombre"
+        autocomplete="name"
+      />
+
+      <label for="customerPhone">Teléfono</label>
+      <input
+        id="customerPhone"
+        type="tel"
+        placeholder="Ejemplo: 11 4048-0762"
+        autocomplete="tel"
+      />
+
+      <label for="deliveryType">Modalidad</label>
+      <select id="deliveryType">
+        <option value="Delivery">Delivery</option>
+        <option value="Retiro en local">Retiro en local</option>
+      </select>
+
+      <label for="customerAddress">Dirección</label>
+      <input
+        id="customerAddress"
+        type="text"
+        placeholder="Calle, número y localidad"
+        autocomplete="street-address"
+      />
+
+      <label for="paymentMethod">Forma de pago</label>
+      <select id="paymentMethod">
+        <option value="Mercado Pago">Mercado Pago</option>
+        <option value="Transferencia">Transferencia</option>
+        <option value="Efectivo">Efectivo</option>
+        <option value="Tarjeta">Tarjeta</option>
+      </select>
+
+      <label for="notes">Observaciones</label>
+      <textarea
+        id="notes"
+        placeholder="Ejemplo: sin aceitunas, sin cebolla, tocar timbre..."
+      ></textarea>
+    </div>
+
+    <button
+      type="button"
+      class="btn primary full"
+      onclick="sendWhatsApp()"
+    >
+      Enviar pedido por WhatsApp
+    </button>
+
+    <button
+      type="button"
+      class="btn mp full"
+      onclick="mercadoPagoInfo()"
+    >
+      Pagar con Mercado Pago
+    </button>
+
+    <small class="payment-note">
+      El pago se procesa de forma segura mediante Mercado Pago.
+    </small>
   </aside>
 
-  <button class="floating-cart" onclick="toggleCart()">🛒 <span id="cartCount">0</span></button>
+  <button
+    type="button"
+    class="floating-cart"
+    onclick="toggleCart()"
+    aria-label="Abrir carrito"
+  >
+    <span class="floating-cart-icon">🛒</span>
+
+    <span class="floating-cart-text">
+      Mi pedido
+    </span>
+
+    <span id="cartCount" class="cart-count">0</span>
+  </button>
 
   <script src="app.js"></script>
 </body>
